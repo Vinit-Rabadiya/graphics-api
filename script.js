@@ -106,11 +106,26 @@ function drawAsteroid() {
   ctx.restore();
 }
 
+//collision
+function checkCollision() {
+  const s = asteroid.size;
+  for (let i = bullets.length - 1; i >= 0; i--) {
+    const b = bullets[i];
+    if (b.x > asteroid.x - s && b.x < asteroid.x + s &&
+        b.y > asteroid.y - s && b.y < asteroid.y + s) {
+      bullets.splice(i, 1);
+      asteroid.x = Math.random() * 600 + 100;
+      asteroid.y = Math.random() * 400 + 100;
+    }
+  }
+}
+
 function gameLoop() {
   ctx.clearRect(0, 0, 800, 600);
   updateShip();
   updateBullets();
   updateAsteroid();
+  checkCollision();
   drawShip();
   drawBullets();
   drawAsteroid();
