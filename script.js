@@ -132,6 +132,7 @@ function gameLoop() {
   drawShip();
   drawBullets();
   drawAsteroid();
+  ctx.fillStyle = "white";
   ctx.fillText("Score: " + score, 10, 20);
   requestAnimationFrame(gameLoop);
 }
