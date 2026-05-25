@@ -37,6 +37,10 @@ function drawShip() {
   ctx.lineTo(-15, 12);   
   ctx.closePath();
 
+  ctx.fillStyle = "#00e5ff";
+  ctx.fill();
+  ctx.strokeStyle = "#ffffff";
+  ctx.lineWidth = 1.5;
   ctx.stroke();
   ctx.restore();
 }
@@ -66,6 +70,7 @@ function updateBullets() {
 }
 
 function drawBullets() {
+  ctx.fillStyle = "#ffff00";
   for (let i = 0; i < bullets.length; i++) {
     ctx.beginPath();
     ctx.arc(bullets[i].x, bullets[i].y, 3, 0, Math.PI * 2);
@@ -102,6 +107,10 @@ function drawAsteroid() {
   ctx.beginPath();
   ctx.rect(-s, -s, s * 2, s * 2);
 
+  ctx.fillStyle = "#ff4400";
+  ctx.fill();
+  ctx.strokeStyle = "#ff9900";
+  ctx.lineWidth = 2;
   ctx.stroke();
   ctx.restore();
 }
