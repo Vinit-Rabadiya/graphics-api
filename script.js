@@ -106,6 +106,8 @@ function drawAsteroid() {
   ctx.restore();
 }
 
+let score = 0;
+
 //collision
 function checkCollision() {
   const s = asteroid.size;
@@ -114,6 +116,7 @@ function checkCollision() {
     if (b.x > asteroid.x - s && b.x < asteroid.x + s &&
         b.y > asteroid.y - s && b.y < asteroid.y + s) {
       bullets.splice(i, 1);
+      score += 10;
       asteroid.x = Math.random() * 600 + 100;
       asteroid.y = Math.random() * 400 + 100;
     }
@@ -129,6 +132,7 @@ function gameLoop() {
   drawShip();
   drawBullets();
   drawAsteroid();
+  ctx.fillText("Score: " + score, 10, 20);
   requestAnimationFrame(gameLoop);
 }
 
