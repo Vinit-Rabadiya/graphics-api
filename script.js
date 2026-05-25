@@ -39,10 +39,45 @@ function drawShip() {
 }
 
 
+//asteroid
+const asteroid = {
+  x: 650,
+  y: 100,
+  size: 30,
+  vx: -1.5,
+  vy: 1,
+  angle: 0
+};
+
+function updateAsteroid() {
+  asteroid.x += asteroid.vx;
+  asteroid.y += asteroid.vy;
+  asteroid.angle += 0.02;
+
+  if (asteroid.x - asteroid.size < 0 || asteroid.x + asteroid.size > 800) asteroid.vx *= -1;
+  if (asteroid.y - asteroid.size < 0 || asteroid.y + asteroid.size > 600) asteroid.vy *= -1;
+}
+
+//square
+function drawAsteroid() {
+  ctx.save();
+  ctx.translate(asteroid.x, asteroid.y);
+  ctx.rotate(asteroid.angle);
+
+  const s = asteroid.size;
+  ctx.beginPath();
+  ctx.rect(-s, -s, s * 2, s * 2);
+
+  ctx.stroke();
+  ctx.restore();
+}
+
 function gameLoop() {
   ctx.clearRect(0, 0, 800, 600);
   updateShip();
+  updateAsteroid();
   drawShip();
+  drawAsteroid();
   requestAnimationFrame(gameLoop);
 }
 
