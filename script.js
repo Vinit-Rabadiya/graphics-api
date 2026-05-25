@@ -3,7 +3,7 @@ const ctx = canvas.getContext("2d");
 
 // Size canvas to fit viewport minus the heading
 const W = window.innerWidth  - 20;
-const H = window.innerHeight - 80;
+const H = window.innerHeight - 100;
 canvas.width  = W;
 canvas.height = H;
 
@@ -11,6 +11,7 @@ const keys = {};
 window.addEventListener("keydown", function(e) {
   keys[e.code] = true;
   if (e.code === "Space") { e.preventDefault(); fireBullet(); }
+  if (e.code === "Enter" && gameOver) restartGame();
 });
 window.addEventListener("keyup", function(e) { keys[e.code] = false; });
 
@@ -122,6 +123,7 @@ function drawAsteroid() {
 }
 
 let score = 0;
+let gameOver = false;
 
 //collision
 function checkCollision() {
@@ -132,23 +134,73 @@ function checkCollision() {
         b.y > asteroid.y - s && b.y < asteroid.y + s) {
       bullets.splice(i, 1);
       score += 10;
-      asteroid.x = Math.random() * 600 + 100;
-      asteroid.y = Math.random() * 400 + 100;
+      asteroid.x = Math.random() * (W - 200) + 100;
+      asteroid.y = Math.random() * (H - 200) + 100;
     }
   }
+
+  // asteroid hits ship
+  const dx = ship.x - asteroid.x;
+  const dy = ship.y - asteroid.y;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  if (dist < s + 15) {
+    gameOver = true;
+  }
+}
+
+function drawGameOver() {
+  ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.textAlign = "center";
+  ctx.fillStyle = "#ff4444";
+  ctx.font = "bold 52px Arial";
+  ctx.fillText("GAME OVER", W / 2, H / 2 - 20);
+
+  ctx.fillStyle = "white";
+  ctx.font = "24px Arial";
+  ctx.fillText("Score: " + score, W / 2, H / 2 + 30);
+
+  ctx.fillStyle = "#aaa";
+  ctx.font = "18px Arial";
+  ctx.fillText("Press Enter to play again", W / 2, H / 2 + 70);
+
+  ctx.textAlign = "left";
+}
+
+function restartGame() {
+  score = 0;
+  gameOver = false;
+  bullets.length = 0;
+  ship.x = W / 2;
+  ship.y = H / 2;
+  ship.angle = -Math.PI / 2;
+  asteroid.x = 650;
+  asteroid.y = 100;
+  asteroid.vx = -1.5;
+  asteroid.vy = 1;
+  asteroid.angle = 0;
 }
 
 function gameLoop() {
   ctx.clearRect(0, 0, W, H);
-  updateShip();
-  updateBullets();
-  updateAsteroid();
-  checkCollision();
+
+  if (!gameOver) {
+    updateShip();
+    updateBullets();
+    updateAsteroid();
+    checkCollision();
+  }
+
   drawShip();
   drawBullets();
   drawAsteroid();
   ctx.fillStyle = "white";
-  ctx.fillText("Score: " + score, 10, 20);
+  ctx.font = "22px Arial";
+  ctx.fillText("Score: " + score, 10, 30);
+
+  if (gameOver) drawGameOver();
+
   requestAnimationFrame(gameLoop);
 }
 
