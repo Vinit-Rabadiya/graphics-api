@@ -2,8 +2,11 @@ const canvas = document.getElementById("game-canvas");
 const ctx = canvas.getContext("2d");
 
 const keys = {};
-window.addEventListener("keydown", function(e) { keys[e.code] = true; });
-window.addEventListener("keyup",   function(e) { keys[e.code] = false; });
+window.addEventListener("keydown", function(e) {
+  keys[e.code] = true;
+  if (e.code === "Space") { e.preventDefault(); fireBullet(); }
+});
+window.addEventListener("keyup", function(e) { keys[e.code] = false; });
 
 // ship position and angle
 const ship = {
@@ -38,6 +41,37 @@ function drawShip() {
   ctx.restore();
 }
 
+
+//bullets
+const bullets = [];
+
+function fireBullet() {
+  bullets.push({
+    x:  ship.x + Math.cos(ship.angle) * 20,
+    y:  ship.y + Math.sin(ship.angle) * 20,
+    vx: Math.cos(ship.angle) * 8,
+    vy: Math.sin(ship.angle) * 8
+  });
+}
+
+function updateBullets() {
+  for (let i = bullets.length - 1; i >= 0; i--) {
+    bullets[i].x += bullets[i].vx;
+    bullets[i].y += bullets[i].vy;
+    if (bullets[i].x < 0 || bullets[i].x > 800 ||
+        bullets[i].y < 0 || bullets[i].y > 600) {
+      bullets.splice(i, 1);
+    }
+  }
+}
+
+function drawBullets() {
+  for (let i = 0; i < bullets.length; i++) {
+    ctx.beginPath();
+    ctx.arc(bullets[i].x, bullets[i].y, 3, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
 
 //asteroid
 const asteroid = {
@@ -75,8 +109,10 @@ function drawAsteroid() {
 function gameLoop() {
   ctx.clearRect(0, 0, 800, 600);
   updateShip();
+  updateBullets();
   updateAsteroid();
   drawShip();
+  drawBullets();
   drawAsteroid();
   requestAnimationFrame(gameLoop);
 }
