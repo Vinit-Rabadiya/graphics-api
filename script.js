@@ -1,34 +1,34 @@
 const canvas = document.getElementById("game-canvas");
-let ctx;
+const ctx = canvas.getContext("2d");
 
-if (canvas.getContext) {
-  ctx = canvas.getContext("2d");
-} else {
-  console.error("Canvas not supported in this browser.");
-}
+// ship position and angle
+const ship = {
+  x: 400,
+  y: 300,
+  angle: -Math.PI / 2  
+};
 
 //triangle
-const angle = Math.PI / 2;
-const centerX = 40;
-const centerY = 80;
+function drawShip() {
+  ctx.save();
 
-ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.translate(ship.x, ship.y);  
+  ctx.rotate(ship.angle);          
 
-ctx.save();
-ctx.translate(centerX, centerY);
-ctx.rotate(angle);
+  ctx.beginPath();
+  ctx.moveTo(20, 0);     
+  ctx.lineTo(-15, -12);  
+  ctx.lineTo(-15, 12);   
+  ctx.closePath();
 
-ctx.beginPath();
-ctx.moveTo(0, -1);
-ctx.lineTo(-50, 30);
-ctx.lineTo(50, 30);
-ctx.closePath();
+  ctx.stroke();
+  ctx.restore();
+}
 
-ctx.fillStyle = "#ff0000";
-ctx.fill();
+function gameLoop() {
+  ctx.clearRect(0, 0, 800, 600);
+  drawShip();
+  requestAnimationFrame(gameLoop);
+}
 
-ctx.lineWidth = 5;
-ctx.strokeStyle = "#000000";
-ctx.stroke();
-
-ctx.restore();
+gameLoop();   
