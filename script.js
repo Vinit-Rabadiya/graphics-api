@@ -1,6 +1,12 @@
 const canvas = document.getElementById("game-canvas");
 const ctx = canvas.getContext("2d");
 
+// Size canvas to fit viewport minus the heading
+const W = window.innerWidth  - 20;
+const H = window.innerHeight - 80;
+canvas.width  = W;
+canvas.height = H;
+
 const keys = {};
 window.addEventListener("keydown", function(e) {
   keys[e.code] = true;
@@ -10,8 +16,8 @@ window.addEventListener("keyup", function(e) { keys[e.code] = false; });
 
 // ship position and angle
 const ship = {
-  x: 400,
-  y: 300,
+  x: W / 2,
+  y: H / 2,
   angle: -Math.PI / 2  
 };
 
@@ -62,8 +68,8 @@ function updateBullets() {
   for (let i = bullets.length - 1; i >= 0; i--) {
     bullets[i].x += bullets[i].vx;
     bullets[i].y += bullets[i].vy;
-    if (bullets[i].x < 0 || bullets[i].x > 800 ||
-        bullets[i].y < 0 || bullets[i].y > 600) {
+    if (bullets[i].x < 0 || bullets[i].x > W ||
+        bullets[i].y < 0 || bullets[i].y > H) {
       bullets.splice(i, 1);
     }
   }
@@ -93,8 +99,8 @@ function updateAsteroid() {
   asteroid.y += asteroid.vy;
   asteroid.angle += 0.02;
 
-  if (asteroid.x - asteroid.size < 0 || asteroid.x + asteroid.size > 800) asteroid.vx *= -1;
-  if (asteroid.y - asteroid.size < 0 || asteroid.y + asteroid.size > 600) asteroid.vy *= -1;
+  if (asteroid.x - asteroid.size < 0 || asteroid.x + asteroid.size > W) asteroid.vx *= -1;
+  if (asteroid.y - asteroid.size < 0 || asteroid.y + asteroid.size > H) asteroid.vy *= -1;
 }
 
 //square
@@ -133,7 +139,7 @@ function checkCollision() {
 }
 
 function gameLoop() {
-  ctx.clearRect(0, 0, 800, 600);
+  ctx.clearRect(0, 0, W, H);
   updateShip();
   updateBullets();
   updateAsteroid();
