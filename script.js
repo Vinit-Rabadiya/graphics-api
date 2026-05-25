@@ -1,7 +1,7 @@
 const canvas = document.getElementById("game-canvas");
 const ctx = canvas.getContext("2d");
 
-// Size canvas to fit viewport minus the heading
+//canvas size to fit the screen
 const W = window.innerWidth  - 20;
 const H = window.innerHeight - 100;
 canvas.width  = W;
@@ -15,14 +15,14 @@ window.addEventListener("keydown", function(e) {
 });
 window.addEventListener("keyup", function(e) { keys[e.code] = false; });
 
-// ship position and angle
+//ship position and angle
 const ship = {
   x: W / 2,
   y: H / 2,
   angle: -Math.PI / 2  
 };
 
-//moving ship with keys
+// application stage,update ship based on keys pressed
 function updateShip() {
   if (keys["ArrowLeft"])  ship.angle -= 0.05;  
   if (keys["ArrowRight"]) ship.angle += 0.05;   
@@ -35,9 +35,12 @@ function updateShip() {
 //triangle
 function drawShip() {
   ctx.save();
+
+  //geometry stage move and rotate
   ctx.translate(ship.x, ship.y);
   ctx.rotate(ship.angle);
 
+  // geometry stage triangle vertices
   ctx.beginPath();
   ctx.moveTo(20, 0);     
   ctx.lineTo(-15, -12);  
@@ -49,13 +52,14 @@ function drawShip() {
   ctx.strokeStyle = "#ffffff";
   ctx.lineWidth = 1.5;
   ctx.stroke();
+
   ctx.restore();
 }
 
-
-//bullets
+// bullets
 const bullets = [];
 
+//application stage 
 function fireBullet() {
   bullets.push({
     x:  ship.x + Math.cos(ship.angle) * 20,
@@ -65,6 +69,7 @@ function fireBullet() {
   });
 }
 
+//application stage move bullets
 function updateBullets() {
   for (let i = bullets.length - 1; i >= 0; i--) {
     bullets[i].x += bullets[i].vx;
@@ -77,6 +82,7 @@ function updateBullets() {
 }
 
 function drawBullets() {
+  // rasterization stage each bullet drawn as a filled circle of pixels
   ctx.fillStyle = "#ffff00";
   for (let i = 0; i < bullets.length; i++) {
     ctx.beginPath();
@@ -85,7 +91,7 @@ function drawBullets() {
   }
 }
 
-//asteroid
+//asteroid state
 const asteroid = {
   x: 650,
   y: 100,
@@ -95,6 +101,7 @@ const asteroid = {
   angle: 0
 };
 
+//application stage move asteroid and bounce off walls
 function updateAsteroid() {
   asteroid.x += asteroid.vx;
   asteroid.y += asteroid.vy;
@@ -104,28 +111,32 @@ function updateAsteroid() {
   if (asteroid.y - asteroid.size < 0 || asteroid.y + asteroid.size > H) asteroid.vy *= -1;
 }
 
-//square
+//asteroid square
 function drawAsteroid() {
   ctx.save();
+  //geometry stage move and rotate
   ctx.translate(asteroid.x, asteroid.y);
   ctx.rotate(asteroid.angle);
 
+  // geometry stage square vertices
   const s = asteroid.size;
   ctx.beginPath();
   ctx.rect(-s, -s, s * 2, s * 2);
 
+  //rasterization stage, fill and stroke turns the path into pixels
   ctx.fillStyle = "#ff4400";
   ctx.fill();
   ctx.strokeStyle = "#ff9900";
   ctx.lineWidth = 2;
   ctx.stroke();
+
   ctx.restore();
 }
 
 let score = 0;
 let gameOver = false;
 
-//collision
+//application stage, check if bullet hit asteroid or asteroid hit ship
 function checkCollision() {
   const s = asteroid.size;
   for (let i = bullets.length - 1; i >= 0; i--) {
@@ -139,7 +150,7 @@ function checkCollision() {
     }
   }
 
-  // asteroid hits ship
+  //check if asteroid reached the ship
   const dx = ship.x - asteroid.x;
   const dy = ship.y - asteroid.y;
   const dist = Math.sqrt(dx * dx + dy * dy);
@@ -149,6 +160,7 @@ function checkCollision() {
 }
 
 function drawGameOver() {
+  // rasterization stage text as pixels
   ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
   ctx.fillRect(0, 0, W, H);
 
@@ -168,6 +180,7 @@ function drawGameOver() {
   ctx.textAlign = "left";
 }
 
+//application stage = reset everything back to start
 function restartGame() {
   score = 0;
   gameOver = false;
@@ -185,6 +198,7 @@ function restartGame() {
 function gameLoop() {
   ctx.clearRect(0, 0, W, H);
 
+  // application stage run all game logic
   if (!gameOver) {
     updateShip();
     updateBullets();
@@ -192,9 +206,12 @@ function gameLoop() {
     checkCollision();
   }
 
+  //geometry and rasterization stage - transform and draw all objects
   drawShip();
   drawBullets();
   drawAsteroid();
+
+  // rasterization stage - draw score text
   ctx.fillStyle = "white";
   ctx.font = "22px Arial";
   ctx.fillText("Score: " + score, 10, 30);
